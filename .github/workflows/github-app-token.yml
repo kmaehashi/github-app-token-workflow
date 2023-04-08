@@ -13,7 +13,8 @@ jobs:
       with:
         node-version: 16
     - run: npm install @octokit/app
-    - uses: actions/github-script@v6
+    - name: Generate Token
+      uses: actions/github-script@v6
       id: token
       env:
         GH_APP_ID: ${{ secrets.GH_APP_ID }}
@@ -55,3 +56,12 @@ jobs:
             repo: context.payload.repository.name,
           });
           console.log(data);
+
+    # Revoke the GitHub app installation token (optional).
+    - name: Revoke Token
+      uses: actions/github-script@v6
+      if: always() && steps.token.outcome == 'success'
+      with:
+        github-token: ${{ steps.token.outputs.result }}
+        script: |
+          console.log(await github.rest.apps.revokeInstallationAccessToken());
