@@ -33,7 +33,7 @@ jobs:
         result-encoding: string
 
     # Example usage.
-    - name: Example: Use the GitHub app installation token
+    - name: "Example: Use the GitHub app installation token"
       uses: actions/github-script@v6
       with:
         github-token: ${{ steps.token.outputs.result }}
