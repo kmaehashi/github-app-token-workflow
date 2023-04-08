@@ -1,2 +1,3 @@
 # github-app-token-actions
-Example of GitHub Actions workflow retrieving GitHub App Installation Token
+
+An example of GitHub Actions workflow that retrieves GitHub App Installation Token.
