@@ -33,7 +33,7 @@ jobs:
         result-encoding: string
 
     # Example usage.
-    - name: Use the GitHub app installation token
+    - name: Example: Use the GitHub app installation token
       uses: actions/github-script@v6
       with:
         github-token: ${{ steps.token.outputs.result }}
@@ -47,16 +47,6 @@ jobs:
           });
           console.log(data);
 
-    - name: Use the default token issued for this GitHub Actions run
-      uses: actions/github-script@v6
-      with:
-        script: |
-          const { data } = await github.rest.repos.get({
-            owner: context.payload.repository.owner.login,
-            repo: context.payload.repository.name,
-          });
-          console.log(data);
-
     # Revoke the GitHub app installation token (optional).
     - name: Revoke Token
       uses: actions/github-script@v6
@@ -64,4 +54,4 @@ jobs:
       with:
         github-token: ${{ steps.token.outputs.result }}
         script: |
-          console.log(await github.rest.apps.revokeInstallationAccessToken());
+          await github.rest.apps.revokeInstallationAccessToken();
