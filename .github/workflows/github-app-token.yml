@@ -1,0 +1,57 @@
+name: "GitHub App Token Example"
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  github-app-token-example:
+    runs-on: ubuntu-latest
+    steps:
+
+    # Get the GitHub app installation token.
+    - uses: actions/setup-node@v3
+      with:
+        node-version: 16
+    - run: npm install @octokit/app
+    - uses: actions/github-script@v6
+      id: token
+      env:
+        GH_APP_ID: ${{ secrets.GH_APP_ID }}
+        GH_APP_PRIVATE_KEY: ${{ secrets.GH_APP_PRIVATE_KEY }}
+      with:
+        script: |
+          const { App } = require("@octokit/app");
+          const app = new App({
+            appId: process.env.GH_APP_ID,
+            privateKey: process.env.GH_APP_PRIVATE_KEY,
+          });
+          const id = (await app.octokit.request("GET /repos/${{ github.repository }}/installation")).data.id;
+          // const id = (await app.octokit.request("GET /orgs/${{ github.repository_owner }}/installation")).data.id;
+          // const id = (await app.octokit.request("GET /users/${{ github.repository_owner }}/installation")).data.id;
+          return (await app.octokit.request(`POST /app/installations/${id}/access_tokens`)).data.token;
+        result-encoding: string
+
+    # Example usage.
+    - name: Use the GitHub app installation token
+      uses: actions/github-script@v6
+      with:
+        github-token: ${{ steps.token.outputs.result }}
+        script: |
+          const { data } = await github.rest.repos.createCommitStatus({
+            owner: context.payload.repository.owner.login,
+            repo: context.payload.repository.name,
+            sha: context.sha,
+            state: 'success',
+            context: 'App',
+          });
+          console.log(data);
+
+    - name: Use the default token issued for this GitHub Actions run
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const { data } = await github.rest.repos.get({
+            owner: context.payload.repository.owner.login,
+            repo: context.payload.repository.name,
+          });
+          console.log(data);
