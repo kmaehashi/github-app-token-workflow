@@ -29,7 +29,9 @@ jobs:
           const id = (await app.octokit.request("GET /repos/${{ github.repository }}/installation")).data.id;
           // const id = (await app.octokit.request("GET /orgs/${{ github.repository_owner }}/installation")).data.id;
           // const id = (await app.octokit.request("GET /users/${{ github.repository_owner }}/installation")).data.id;
-          return (await app.octokit.request(`POST /app/installations/${id}/access_tokens`)).data.token;
+          const token = (await app.octokit.request(`POST /app/installations/${id}/access_tokens`)).data.token;
+          core.setSecret(token);
+          return token;
         result-encoding: string
 
     # Example usage.
