@@ -9,10 +9,7 @@ jobs:
     steps:
 
     # Get the GitHub app installation token.
-    - uses: actions/setup-node@v3
-      with:
-        node-version: 16
-    - run: npm install @octokit/app
+    - run: npm install @octokit/app@v13.1.8
     - name: Generate Token
       uses: actions/github-script@v6
       id: token
